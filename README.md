@@ -71,3 +71,29 @@ docker-compose down
 docker-compose up -d
 ls wordpress/themes
 ```
+
+8. いよいよ`themes`ディレクトリに自分のテーマ(my_themeと名付ける)を作っていく。  
+使いたい親テーマがあるならそれもここに入れる。  
+```shell
+cd wordpress/themes
+mkdir my_theme
+cd my_theme
+```
+まずWordPressテーマとして必要最低限のものを用意する。  
+### style.css
+```css
+  /*
+  Theme Name: My Theme
+  Author: Watashino Namae
+  Version: 1.0
+  */
+```
+
+### index.php
+```php
+<h1><?php echo get_bloginfo('name'); ?></h1>
+```
+
+これで管理画面から自分のテーマを選択できるようになったので確認する。  
+Mac: `open http://localhost:8000/wp-admin/themes.php`  
+Linux: `xdg-open http://localhost:8000/wp-admin/themes.php`  
