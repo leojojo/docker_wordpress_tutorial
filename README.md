@@ -52,7 +52,22 @@ MySQLのDocker公式イメージには便利な仕組みが用意されている
 ```
 これでDBごとGitHubで共有できるようになったので、ローカルからボリュームを一回消して、また同じ画面に立ち上がるかを確認する。  
 ```shell
-docker-compose down -V
+docker-compose down -v
 docker-compose up -d
 ```
 これを実行してまた先程と同じ画面が表示されたらOK。
+
+7. WordPressのテーマが入った`themes`ディレクトリへの変更を永続化する。  
+つまり、コンテナを消しても編集内容が消えず、GitHubにも上げられるようにする。 
+`docker-compose.yml`の`wordpress`コンテナの`volume`に書き足す。  
+```yaml
+  volumes:
+    - ./wordpress/themes:/var/www/html/wp-content/themes/
+```
+デフォルトのテーマがすべてローカルにもできるので確認する。  
+```shell
+mkdir -p wordpress/themes
+docker-compose down
+docker-compose up -d
+ls wordpress/themes
+```
