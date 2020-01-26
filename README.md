@@ -43,3 +43,16 @@ docker exec mysql /usr/bin/mysqldump -u wordpress -pwordpress wordpress > mysql/
 ```
 これでコンテナ内でダンプを取るコマンドが実行されて、SQLでデータベースの中身が出力されているので確認する。  
 `cat mysql/dump.sql`
+
+6. コンテナ起動時にダンプファイルが読み込まれるようにする。  
+MySQLのDocker公式イメージには便利な仕組みが用意されている。  
+それを利用するため、以下を`docker-compose.yml`の`mysql`コンテナの`volume`に書き足す。  
+```yaml
+    - ./mysql:/docker-entrypoint-initdb.d
+```
+これでDBごとGitHubで共有できるようになったので、ローカルからボリュームを一回消して、また同じ画面に立ち上がるかを確認する。  
+```shell
+docker-compose down -V
+docker-compose up -d
+```
+これを実行してまた先程と同じ画面が表示されたらOK。
