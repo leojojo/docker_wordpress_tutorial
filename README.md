@@ -6,7 +6,7 @@
 ```shell
 mkdir my_wordpress
 cd my_wordpress
-curl http://gitignore.io/api/vim,macos,wordpress,visualstudiocode > .gitignore
+curl https://gitignore.io/api/vim,macos,wordpress,visualstudiocode > .gitignore
 ```
 
 2. Docker公式サイトにDocker Composeを使ったWordPress環境を作る`docker-compose.yml`があるのでそれを利用。  
