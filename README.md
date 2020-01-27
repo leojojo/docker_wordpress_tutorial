@@ -57,6 +57,11 @@ docker exec mysql /usr/bin/mysqldump -u wordpress -pwordpress wordpress > mysql/
 ```
 これでコンテナ内でダンプを取るコマンドが実行されて、SQLでデータベースの中身が出力されているので確認する。  
 `cat mysql/dump.sql`
+最後にgitでデータベースを管理できない設定にしてしまったので、以下を削除してできるようにする。
+```
+*.sql
+*.sqlite
+```
 
 ## 6. コンテナ起動時にダンプファイルが読み込まれるようにする。  
 MySQLのDocker公式イメージには便利な仕組みが用意されている。  
