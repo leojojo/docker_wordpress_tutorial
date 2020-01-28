@@ -120,3 +120,85 @@ cd my_theme
 
 これで管理画面から自分のテーマを選択できるようになったので確認する。  
 http://localhost:8000/wp-admin/themes.php
+
+## 9. 今のサイトをサーバーに上げて、自分のドメインで公開できるようにダンプファイルを書き換える。  
+さくらのレンタルサーバーやら選択肢はあるが、今回はのGCPの無料枠で公開する。  
+```shell
+gcloud compute instances create wordpress-tutorial --zone=asia-northeast1-a --machine-type=f1-micro --image-family=ubuntu-minimal-1810 --image-project=ubuntu-os-cloud
+gcloud compute instances list
+gcloud compute firewall-rules create wp-default --allow tcp:8000 --source-tags=wordpress-tutorial --source-ranges=0.0.0.0/0 
+gcloud compute ssh wordpress-tutorial --zone=asia-northeast1-a
+```
+```shell
+git clone 自分のリポジトリのゆーあーるえる
+cd 自分のリポジトリのでぃれくとり
+```
+今作ったGCPのインスタンス上でDocker Compose、gitあたりのインストールをする。  
+ドメインレジストラではDNSの設定をして、このGCPインスタンスのEXTERNAL_IPへドメインを向ける。  
+
+WordPressのデータベースの設定で`localhost:8000`が現在のサイトのURLおよびホームページとして設定されている。  
+このサイトを公開して、用意したドメインで運用するとなるとこれを書き換える必要がある。  
+いくつか方法はあるが、今回はシェルコマンドでダンプファイルにある`localhost:8000`を移行先ドメインに置き換える。  
+```shell
+sed -i 's/localhost:8000/移行先ドメインどっとこむ/g' mysql/dump.sql
+docker-compose up -d
+```
+
+## 10. 開発していく
+以降は、新機能なら`feature/新機能名`、修正なら`fix/修正対象`などと名付けたブランチを切って開発していくと良い。  
+```shell
+git branch feature/新機能名
+git checkout feature/新機能名
+
+開発をする
+
+git add .
+git commit -m "新機能概要"
+git push -u origin feature/新機能名
+```
+
+変更をサーバーに上げたい時にはまず変更がGitHubに上がっているのを確認してから、サーバー上でpullして持ってくる。  
+本番サーバーなら`master`ブランチを使って、開発サーバーなら任意のブランチや`develop`などと名付けた別のブランチを使うと良い。  
+```shell
+gcloud compute ssh wordpress-tutorial --zone=asia-northeast1-a
+```
+```shell
+cd 自分のリポジトリのでぃれくとり
+git fetch
+git checkout feature/新機能名
+docker-compose restart
+```
+
+### テーマ開発
+- 全般
+  - https://noumenon-th.net/programming/wordpress/
+  - https://wpdocs.osdn.jp/%E3%83%86%E3%83%BC%E3%83%9E%E3%81%AE%E4%BD%9C%E6%88%90
+- 任意の入力欄がほしい
+  - https://haniwaman.com/advanced-custom-fields/
+- SEO
+  - https://ja.wordpress.org/plugins/all-in-one-seo-pack/
+
+### デザインの諸々
+- CSS全般
+  - https://www.w3.org/Style/Examples/007/center.ja.html
+  - https://www.mirucon.com/2016/06/24/flexbox-grid-design/
+  - https://coliss.com/articles/build-websites/operation/css/css-grid-vs-flexbox-which-should-you-choose.html
+- カルーセル
+  - https://coliss.com/articles/build-websites/operation/javascript/jquery-plugin-slick.html
+  - https://coliss.com/articles/build-websites/operation/javascript/es6-slider-carousel-glidejs.html
+- SCSSを使いたい
+  - https://qiita.com/super-mana-chan/items/42b207ad2e216ac6a638
+
+### プラグインを管理する
+[7. WordPressのテーマが入った`themes`ディレクトリへの変更を永続化する。](https://github.com/leojojo/wordpress_tutorial#7-wordpress%E3%81%AE%E3%83%86%E3%83%BC%E3%83%9E%E3%81%8C%E5%85%A5%E3%81%A3%E3%81%9Fthemes%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%B8%E3%81%AE%E5%A4%89%E6%9B%B4%E3%82%92%E6%B0%B8%E7%B6%9A%E5%8C%96%E3%81%99%E3%82%8B)
+これを参考に`theme`と一緒に`plugin`も作る。  
+
+### 〇〇が足りない
+- 画像アップロード上限: https://tech.recruit-mp.co.jp/infrastructure/post-13086/#h-1 「ファイルアップロードサイズの上限値を設定する」
+- 日本語: https://tech.recruit-mp.co.jp/infrastructure/post-13086/#h-2
+- はやさ: https://kusanagi.tokyo/cloud/kusanagi-runs-on-docker/
+
+### 〇〇が欲しい
+- HTTPS: https://github.com/hoto17296/docker-certfront
+- phpmyadmin: https://github.com/phpmyadmin/docker/blob/master/docker-compose.yml
+それぞれ`docker-compose.yml`に追加する。
